@@ -34,6 +34,7 @@ Fractal Gain = 0.4
 
 ## Todo:
 
+- [ ] add readme for chunk
 - [ ] figure out what surface level does
 - [ ] Voxel Size
 - [ ] create Add / Remove Voxels
