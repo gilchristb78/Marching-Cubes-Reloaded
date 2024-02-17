@@ -18,3 +18,15 @@ This class will control all of the chunks and be the main gateway for function c
 - Remove Voxels: In a 3x3x3 cube call the get chunk function with each coordinate. <br> save this chunk in a unique list. <br> call its remove function with localized x,y,z. <br> re-render all chunks in our unique list. <br>`note: must ensure chunks are rendered around player or this will break`
 - Get Chunk: Given an FVector Coordinate, set the z coordinate to 0 (as thats where we spawn all chunks). <br> then divide Y and Z by chunkSize * VoxelSize <br> plug this value into our map giving you our chunk. `specifically will break here`
 - Get Local Coordinates: Modulus by ChunkSize * VoxelSize giving you coordinates of voxels within a specific chunk.
+
+
+
+
+## Todo:
+
+- [ ] create Add / Remove Voxels
+  - [ ] Different Blocks
+- [ ] Biomes
+- [ ] Caves
+  - [ ] 3d perlin noise
+  - [ ] snaking perlin noise
