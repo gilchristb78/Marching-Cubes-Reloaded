@@ -20,10 +20,22 @@ This class will control all of the chunks and be the main gateway for function c
 - Get Local Coordinates: Modulus by ChunkSize * VoxelSize giving you coordinates of voxels within a specific chunk.
 
 
+## Current Values:
 
+DrawDistance = 1-12 based on testing speed
+Chunk Size / Height = 32
+Voxel Size = 100
+Sea Level = 14
+Frequency = 0.012
+Surface Level = 0
+Fractal Octaves = 4
+Fractal Lacunarity = 1.8
+Fractal Gain = 0.4
 
 ## Todo:
 
+- [ ] figure out what surface level does
+- [ ] Voxel Size
 - [ ] create Add / Remove Voxels
   - [ ] Different Blocks
 - [ ] Biomes
