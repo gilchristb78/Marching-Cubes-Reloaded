@@ -38,11 +38,11 @@ Fractal Gain = 0.4
 - [ ] Update readme for generate
 - [ ] figure out what surface level does (swapped which side is "up" will generate the mesh uside down)
 - [X] Voxel Size
-- [ ] create Add / Remove Voxels
+- [X] create Add / Remove Voxels
   - [ ] Different Blocks
-  - [ ] Add Voxels
+  - [X] Add Voxels
   - [X] Remove Voxels
 - [ ] Biomes
 - [ ] Caves
-  - [ ] 3d perlin noise
+  - [X] 3d perlin noise
   - [ ] snaking perlin noise
