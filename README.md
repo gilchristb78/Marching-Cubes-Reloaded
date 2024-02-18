@@ -37,7 +37,7 @@ Fractal Gain = 0.4
 - [ ] add readme for chunk
 - [ ] Update readme for generate
 - [ ] figure out what surface level does (swapped which side is "up" will generate the mesh uside down)
-- [ ] Voxel Size
+- [X] Voxel Size
 - [ ] create Add / Remove Voxels
   - [ ] Different Blocks
   - [ ] Add Voxels
