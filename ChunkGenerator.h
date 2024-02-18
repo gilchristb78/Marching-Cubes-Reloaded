@@ -48,6 +48,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Chunk Gen")
 	float FractalGain = 0.5f;
 
+	UPROPERTY(EditAnywhere, Category = "Chunk Gen")
+	int ZoomLevel = 1;
+
 	TMap<FVector, AChunk*> chunks;
 
 	UPROPERTY(EditInstanceOnly, Category = "Chunk Gen")
@@ -58,23 +61,18 @@ public:
 
 	void RenderChunk(FVector ChunkPos);
 
+	UFUNCTION(BlueprintCallable, Category = "Chunk Gen")
+	void RemoveVoxels(FVector TargetPos);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	/*
-	float Frequency = 0.01f;
-	float SurfaceLevel = 0.0f;
+	TArray<AChunk*> SetBlockTo(FVector WorldPos, EBlock blockType);
+	
+private:
 
-	int ChunkSize = 32;
-	int ChunkHeight = 32;
-	int SeaLevel = 30;
-
-	int FractalOctaves = 3;
-	float FractalLacunarity = 2.0f;
-	float FractalGain = 0.5f;
-
-
-	*/
+	FVector GetLocalPos(FVector WorldPos);
+	FVector GetChunkPos(FVector WorldPos);
 
 };
