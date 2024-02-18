@@ -12,7 +12,7 @@ class UProceduralMeshComponent;
 UENUM(BlueprintType)
 enum class EBlock
 {
-	Null, Air, Stone, Water
+	Null, Air, Stone, Water, Sand
 };
 
 USTRUCT()
@@ -48,6 +48,7 @@ public:
 	int ChunkSize = 32;
 	int ChunkHeight = 32;
 	int SeaLevel = 30;
+	int ZoomLevel = 1;
 
 	int FractalOctaves = 3;
 	float FractalLacunarity = 2.0f;
@@ -58,6 +59,9 @@ public:
 	TObjectPtr<UMaterialInterface> MaterialWater;
 
 	void RenderChunk();
+
+
+	void SetVoxelTo(FVector VoxelPos, EBlock blockType);
 
 protected:
 	// Called when the game starts or when spawned
@@ -70,7 +74,7 @@ private:
 
 	int GetVoxelIndex(int X, int Y, int Z) const;
 
-	void March(int X, int Y, int Z, const float Cube[8], FChunkMeshData& data, int& VertexIncrementer, bool Water = false);
+	void March(int X, int Y, int Z, const float Cube[8], FChunkMeshData& data, int& VertexIncrementer, EBlock BlockType); 
 
 	TObjectPtr<UProceduralMeshComponent> Mesh;
 	FastNoiseLite* Noise;

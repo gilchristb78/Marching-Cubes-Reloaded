@@ -19,11 +19,12 @@ AChunk::AChunk()
 
 	SetRootComponent(Mesh);
 
-	Voxels.SetNum((ChunkHeight + 1) * (ChunkSize + 1) * (ChunkSize + 1));
+	
 }
 
 void AChunk::GenerateVoxels()
 {
+	Voxels.SetNum((ChunkHeight + 1) * (ChunkSize + 1) * (ChunkSize + 1));
 	Noise->SetFrequency(Frequency);
 	Noise->SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	Noise->SetFractalType(FastNoiseLite::FractalType_FBm);
@@ -39,13 +40,20 @@ void AChunk::GenerateVoxels()
 		{
 			const int Height = FMath::Clamp(
 				FMath::RoundToInt(
-					(Noise->GetNoise(x + Position.X, y + Position.Y) + 1)// 0 - 2
+					(Noise->GetNoise((x + Position.X) / ZoomLevel, (y + Position.Y) / ZoomLevel) + 1)// 0 - 2
 					* ChunkHeight / 2), //0 - ChunkHeight
 				0, ChunkHeight); //ensure (clamp)
 
 			for (int z = 0; z < Height; z++)
 			{
-				Voxels[GetVoxelIndex(x, y, z)] = EBlock::Stone;
+				if ((SeaLevel - Height >= 0 && Height - z <= 2))
+				{
+					Voxels[GetVoxelIndex(x, y, z)] = EBlock::Sand;
+				}
+				else
+				{
+					Voxels[GetVoxelIndex(x, y, z)] = EBlock::Stone;
+				}
 			}
 
 			for (int z = Height; z < SeaLevel; z++)
@@ -84,6 +92,13 @@ void AChunk::RenderChunk()
 	ApplyMesh();
 }
 
+void AChunk::SetVoxelTo(FVector VoxelPos, EBlock blockType)
+{
+	int Index = GetVoxelIndex(round(VoxelPos.X), round(VoxelPos.Y), round(VoxelPos.Z));
+	if(Voxels[Index] != EBlock::Water)
+		Voxels[Index] = blockType;
+}
+
 // Called when the game starts or when spawned
 void AChunk::BeginPlay()
 {
@@ -117,27 +132,38 @@ void AChunk::GenerateMesh()
 
 	float GroundCube[8] = {};
 	float WaterCube[8] = {};
+	int sand = 0;
 
 	for (int x = 0; x < ChunkSize; x++)
 	{
 		for (int y = 0; y < ChunkSize; y++)
 		{
-			for (int z = 0; z < ChunkSize; z++)
+			for (int z = 0; z < ChunkHeight; z++)
 			{
+				sand = 0;
 				for (int i = 0; i < 8; i++)
 				{
+					
 					EBlock boxVector = Voxels[GetVoxelIndex(x + VertexOffset[i][0], y + VertexOffset[i][1], z + VertexOffset[i][2])];
-					boxVector == EBlock::Stone ? GroundCube[i] = 1 : GroundCube[i] = 0;
+					boxVector == EBlock::Stone || boxVector == EBlock::Sand ? GroundCube[i] = 1 : GroundCube[i] = 0;
 					boxVector == EBlock::Water ? WaterCube[i] = 1 : WaterCube[i] = 0;
+					if (boxVector == EBlock::Sand || boxVector == EBlock::Water) sand++;
 				}
 
 				if (WaterCube[0] == 1 || WaterCube[1] == 1 || WaterCube[2] == 1 || WaterCube[3] == 1) //hack to make water a flat surface
 				{
 					WaterCube[0] = 1; WaterCube[1] = 1; WaterCube[2] = 1; WaterCube[3] = 1;
 				}
-
-				March(x, y, z, GroundCube, MeshData, VertexCountGround);
-				March(x, y, z, WaterCube, MeshDataWater, VertexCountWater, true);
+				if (sand < 4)
+				{
+					March(x, y, z, GroundCube, MeshData, VertexCountGround, EBlock::Stone);
+				}
+				else
+				{
+					March(x, y, z, GroundCube, MeshData, VertexCountGround, EBlock::Sand);
+				}
+				
+				March(x, y, z, WaterCube, MeshDataWater, VertexCountWater, EBlock::Water);
 			}
 		}
 	}
@@ -148,7 +174,7 @@ int AChunk::GetVoxelIndex(int X, int Y, int Z) const
 	return X * (ChunkSize + 1) * (ChunkHeight + 1) + Y * (ChunkHeight + 1) + Z;
 }
 
-void AChunk::March(int X, int Y, int Z, const float Cube[8], FChunkMeshData& data, int& VertexIncrementer, bool Water)
+void AChunk::March(int X, int Y, int Z, const float Cube[8], FChunkMeshData& data, int& VertexIncrementer, EBlock BlockType)
 {
 	int VertexMask = 0;
 	for (int i = 0; i < 8; i++) //set our vertex mask
@@ -168,7 +194,7 @@ void AChunk::March(int X, int Y, int Z, const float Cube[8], FChunkMeshData& dat
 			EdgeVertex[i].X = X + (VertexOffset[EdgeConnection[i][0]][0] + .5 * EdgeDirection[i][0]); //.5 is our "interpolation" value (not interpolating)
 			EdgeVertex[i].Y = Y + (VertexOffset[EdgeConnection[i][0]][1] + .5 * EdgeDirection[i][1]);
 			EdgeVertex[i].Z = Z + (VertexOffset[EdgeConnection[i][0]][2] + .5 * EdgeDirection[i][2]);
-			if (Water)
+			if (BlockType == EBlock::Water)
 				EdgeVertex[i].Z -= 0.1;
 		}
 	}
@@ -196,13 +222,19 @@ void AChunk::March(int X, int Y, int Z, const float Cube[8], FChunkMeshData& dat
 		data.Normals.Add(Normal);
 		data.Normals.Add(Normal);
 
-		if (Water)
+		if (BlockType == EBlock::Water)
 		{
 			data.Colors.Add(FColor(50, 100, 200));
 			data.Colors.Add(FColor(50, 100, 200));
 			data.Colors.Add(FColor(50, 100, 200));
 		}
-		else
+		else if(BlockType == EBlock::Sand)
+		{
+			data.Colors.Add(FColor(250, 250, 200));
+			data.Colors.Add(FColor(250, 250, 200));
+			data.Colors.Add(FColor(250, 250, 200));
+		}
+		else 
 		{
 			data.Colors.Add(FColor(100, 100, 100));
 			data.Colors.Add(FColor(100, 100, 100));
