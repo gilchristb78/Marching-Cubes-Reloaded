@@ -24,15 +24,9 @@ AChunk::AChunk()
 
 void AChunk::GenerateVoxels()
 {
-	Voxels.SetNum((ChunkHeight + 1) * (ChunkSize + 1) * (ChunkSize + 1));
-	Noise->SetFrequency(Frequency);
-	Noise->SetNoiseType(FastNoiseLite::NoiseType_Perlin);
-	Noise->SetFractalType(FastNoiseLite::FractalType_FBm);
-	Noise->SetFractalOctaves(FractalOctaves);
-	Noise->SetFractalLacunarity(FractalLacunarity);
-	Noise->SetFractalGain(FractalGain);
+	
 
-	FVector Position = GetActorLocation() / 100;
+	FVector Position = GetActorLocation() / VoxelSize;
 
 	for (int x = 0; x <= ChunkSize; x++)
 	{
@@ -46,7 +40,7 @@ void AChunk::GenerateVoxels()
 
 			for (int z = 0; z < Height; z++)
 			{
-				if ((SeaLevel - Height >= 0 && Height - z <= 2))
+				if ((SeaLevel - Height >= 0 && Height - z <= 3))
 				{
 					Voxels[GetVoxelIndex(x, y, z)] = EBlock::Sand;
 				}
@@ -103,6 +97,14 @@ void AChunk::SetVoxelTo(FVector VoxelPos, EBlock blockType)
 void AChunk::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Voxels.SetNum((ChunkHeight + 1) * (ChunkSize + 1) * (ChunkSize + 1));
+	Noise->SetFrequency(Frequency);
+	Noise->SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+	Noise->SetFractalType(FastNoiseLite::FractalType_FBm);
+	Noise->SetFractalOctaves(FractalOctaves);
+	Noise->SetFractalLacunarity(FractalLacunarity);
+	Noise->SetFractalGain(FractalGain);
 
 	GenerateVoxels();
 
@@ -203,9 +205,9 @@ void AChunk::March(int X, int Y, int Z, const float Cube[8], FChunkMeshData& dat
 	{
 		if (TriangleConnectionTable[VertexMask][3 * i] < 0) break;
 
-		FVector V1 = EdgeVertex[TriangleConnectionTable[VertexMask][3 * i]] * 100; //get a vertex of the triangle we should draw
-		FVector V2 = EdgeVertex[TriangleConnectionTable[VertexMask][3 * i + 1]] * 100;
-		FVector V3 = EdgeVertex[TriangleConnectionTable[VertexMask][3 * i + 2]] * 100;
+		FVector V1 = EdgeVertex[TriangleConnectionTable[VertexMask][3 * i]] * VoxelSize; //get a vertex of the triangle we should draw
+		FVector V2 = EdgeVertex[TriangleConnectionTable[VertexMask][3 * i + 1]] * VoxelSize;
+		FVector V3 = EdgeVertex[TriangleConnectionTable[VertexMask][3 * i + 2]] * VoxelSize;
 
 		FVector Normal = FVector::CrossProduct(V2 - V1, V3 - V1);
 		Normal.Normalize();

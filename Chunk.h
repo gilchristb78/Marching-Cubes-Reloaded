@@ -49,6 +49,7 @@ public:
 	int ChunkHeight = 32;
 	int SeaLevel = 30;
 	int ZoomLevel = 1;
+	int VoxelSize = 100;
 
 	int FractalOctaves = 3;
 	float FractalLacunarity = 2.0f;

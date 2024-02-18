@@ -34,6 +34,7 @@ void AChunkGenerator::RenderChunk(FVector ChunkPos)
 	chunk->FractalGain = FractalGain;
 	chunk->FractalLacunarity = FractalLacunarity;
 	chunk->ZoomLevel = ZoomLevel;
+	chunk->VoxelSize = VoxelSize;
 	UGameplayStatics::FinishSpawningActor(chunk, transform);
 	chunks.Add(ChunkPos, chunk);
 	
@@ -42,6 +43,7 @@ void AChunkGenerator::RenderChunk(FVector ChunkPos)
 void AChunkGenerator::RemoveVoxels(FVector TargetPos)
 {
 	TArray<AChunk*> ModifiedChunks = TArray<AChunk*>();
+
 	for (int x = -1; x <= 1; x++)
 	{
 		for (int y = -1; y <= 1; y++)
