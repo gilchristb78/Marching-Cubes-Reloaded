@@ -40,7 +40,7 @@ void AChunkGenerator::RenderChunk(FVector ChunkPos)
 	
 }
 
-void AChunkGenerator::RemoveVoxels(FVector TargetPos)
+void AChunkGenerator::RemoveVoxels3x3x3(FVector TargetPos)
 {
 	TArray<AChunk*> ModifiedChunks = TArray<AChunk*>();
 
@@ -51,6 +51,27 @@ void AChunkGenerator::RemoveVoxels(FVector TargetPos)
 			for (int z = -1; z <= 1; z++)
 			{
 				for (AChunk* chunk : SetBlockTo(TargetPos + FVector(x * VoxelSize, y * VoxelSize, z * VoxelSize), EBlock::Air))
+				{
+					ModifiedChunks.AddUnique(chunk);
+				}
+			}
+		}
+	}
+	for (AChunk* chunk : ModifiedChunks)
+		chunk->RenderChunk();
+}
+
+void AChunkGenerator::AddVoxels3x3x3(FVector TargetPos)
+{
+	TArray<AChunk*> ModifiedChunks = TArray<AChunk*>();
+
+	for (int x = -1; x <= 1; x++)
+	{
+		for (int y = -1; y <= 1; y++)
+		{
+			for (int z = -1; z <= 1; z++)
+			{
+				for (AChunk* chunk : SetBlockTo(TargetPos + FVector(x * VoxelSize, y * VoxelSize, z * VoxelSize), EBlock::Stone))
 				{
 					ModifiedChunks.AddUnique(chunk);
 				}

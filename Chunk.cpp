@@ -46,7 +46,15 @@ void AChunk::GenerateVoxels()
 				}
 				else
 				{
-					Voxels[GetVoxelIndex(x, y, z)] = EBlock::Stone;
+					if (Noise->GetNoise(x + Position.X, y + Position.Y, z + Position.Z) > 0.35 && z > 2)
+					{
+						Voxels[GetVoxelIndex(x, y, z)] = EBlock::Air;
+					}
+					else 
+					{
+						Voxels[GetVoxelIndex(x, y, z)] = EBlock::Stone;
+					}
+					
 				}
 			}
 

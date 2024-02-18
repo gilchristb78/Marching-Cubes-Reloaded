@@ -62,7 +62,10 @@ public:
 	void RenderChunk(FVector ChunkPos);
 
 	UFUNCTION(BlueprintCallable, Category = "Chunk Gen")
-	void RemoveVoxels(FVector TargetPos);
+	void RemoveVoxels3x3x3(FVector TargetPos);
+
+	UFUNCTION(BlueprintCallable, Category = "Chunk Gen")
+	void AddVoxels3x3x3(FVector TargetPos);
 
 protected:
 	// Called when the game starts or when spawned
